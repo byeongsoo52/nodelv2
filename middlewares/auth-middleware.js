@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../schemas/user");
+const User = require("../schemas/user.js");
 
 // 사용자 인증 미들웨어
 module.exports = async (req, res, next) => {
@@ -13,8 +13,8 @@ module.exports = async (req, res, next) => {
     // authType === Bearer값인지 확인
     // authToken 검증
     if (!authToken || authType !== "Bearer") {
-        res.status(401).send({
-            errorMessage: "로그인 후 이용 가능한 기능입니다.",
+        res.status(403).json({
+            errorMessage: "로그인이 필요한 기능입니다.",
         });
         return;
     }
@@ -27,6 +27,7 @@ module.exports = async (req, res, next) => {
         
         // 3. autoToken에 있는 userId에 해당하는 사용자가 실제 DB에 존재하는지 확인
         const user = await User.findById(userId);
+        
         // 데이터베이스에서 사용자 정보를 가져오지 않게 할 수 있도록 
         // express가 제공하는 안전한 변수인 res.locals에 담아두고, 
         // 언제나 꺼내서 사용할 수 있게 작성
@@ -34,8 +35,9 @@ module.exports = async (req, res, next) => {
         next(); // 이 미들웨어 다음으로 보낸다.
     } catch (err) {
         console.error(err);
-        res.status(401).send({
-            errorMessage: "로그인 후 이용 가능한 기능입니다.",
+        res.status(403).json({
+            errorMessage: "전달된 쿠키에서 오류가 발생하였습니다.",
         });
-    }
+        return;
+    };
 };

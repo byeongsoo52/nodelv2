@@ -10,10 +10,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  confirmPassword: { // 비밀번호 확인 필드
-    type: String,
-    required: true
-  }
 });
 
 // 가상의 userId 값을 할당
